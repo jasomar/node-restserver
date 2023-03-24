@@ -1,4 +1,9 @@
 import {Router} from 'express';
+import {check} from 'express-validator';
+import {validateRequest} from '../middlewares/validate-request.js';
+import {isRoleValid,checkMailExist,userById} from '../helpers/db-validators.js'
+
+
 import  {userDelete,
         userGet,
         userPatch,
@@ -6,15 +11,33 @@ import  {userDelete,
         userPut
 }  from '../controllers/user.js';
 
+
 const router = Router()
 
 router.get('/',userGet);
 
-router.put('/:id',userPut);
+router.put('/:id',[
+    check('id', 'Is not a valid ID').isMongoId(),
+    check('id').custom(userById),
+    validateRequest,
+],
+userPut);
 
-router.post('/',userPost);
+router.post('/',[
+    check('name','Name is empty').not().isEmpty(),
+    check('mail','Invalid Email').isEmail(),
+    check('password','Password must have 6 characters at least').isLength( { min:6 } ),
+    //check('role','Is not a valid role').isIn( ['ADMIN_ROLE','USER_ROLE'] ),
+    check('role').custom( isRoleValid ),
+    check('mail').custom( checkMailExist ),
+    validateRequest,
+],userPost);
 
-router.delete('/',userDelete);
+router.delete('/:id',[
+    check('id', 'Is not a valid ID').isMongoId(),
+    check('id').custom(userById),
+    validateRequest,
+],userDelete);
 
 router.patch('/',userPatch);
 
