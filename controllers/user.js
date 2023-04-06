@@ -53,7 +53,6 @@ const userPut = async(req, res = response)=> {
 
 const userDelete = async(req, res = response)=> {
     const {id} = req.params;
-
     const user = await UserDB.findByIdAndUpdate(id,{state: false});
 
     res.json({

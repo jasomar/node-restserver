@@ -1,6 +1,8 @@
 import {Router} from 'express';
 import {check} from 'express-validator';
-import {validateRequest} from '../middlewares/validate-request.js';
+
+import {validateRequest, validateJWT, isAdminRole, hasRole} from '../middlewares/index.js'
+
 import {isRoleValid,checkMailExist,userById} from '../helpers/db-validators.js'
 
 
@@ -34,6 +36,9 @@ router.post('/',[
 ],userPost);
 
 router.delete('/:id',[
+    validateJWT,
+     //isAdminRole, //check admin role only
+    hasRole('ADMIN_ROLE','SALES_ROLE'),
     check('id', 'Is not a valid ID').isMongoId(),
     check('id').custom(userById),
     validateRequest,

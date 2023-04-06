@@ -33,7 +33,9 @@ const UserSchema = new Schema({
 
 //remove propeties after insert it
 UserSchema.methods.toJSON = function(){
-    const {password, __v,...user} = this.toObject();
+    const {password, __v,_id,...user} = this.toObject();
+    // can host any name
+    user.uid = _id;
     return user;
 }
 
